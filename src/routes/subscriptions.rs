@@ -19,7 +19,10 @@ use crate::domain::{SubscriberDetails, SubscriptionFormData};
 	)
 )]
 pub async fn subscriptions_post(form: web::Form<SubscriptionFormData>, db_pool: web::Data<PgPool>) -> HttpResponse {
-	let subscriber_deails = SubscriberDetails::from_form(&form);
+	let subscriber_deails = match SubscriberDetails::from_form(&form) {
+		Ok(subscriber_deails) => subscriber_deails,
+		Err(_) => return HttpResponse::BadRequest().finish()
+	};
 	match insert_subscriber(&subscriber_deails, &db_pool).await {
 		Ok(_) => HttpResponse::Ok().finish(),
 		Err(_) => HttpResponse::InternalServerError().finish()
