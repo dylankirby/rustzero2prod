@@ -58,6 +58,19 @@ mod tests {
 		assert_eq!(res, false);
 	}
 
+	#[test]
+	fn email_without_at_symbol_is_rejected() {
+		let email = "somedomain.com";
+		let res = is_valid_email(&email);
+		assert_eq!(res, false);
+	}
+
+	#[test]
+	fn email_without_subject_is_rejected() {
+		let email = "@gmail.com";
+		let res = is_valid_email(&email);
+		assert_eq!(res, false);
+	}
 
 	#[test]
 	fn name_with_invalid_charaters_is_rejected() {
