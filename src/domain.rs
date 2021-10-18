@@ -1,3 +1,4 @@
+use std::convert::TryInto;
 use serde::Deserialize;
 
 use crate::validation::{is_valid_name, is_valid_email};
@@ -14,12 +15,14 @@ pub struct SubscriberDetails {
 	pub email: SubscriberEmail,
 }
 
-impl SubscriberDetails {
-	pub fn from_form(form: &SubscriptionFormData) -> Result<SubscriberDetails, String> {
-		let name = SubscriberName::parse(form.name.clone())?;
-		let email = SubscriberEmail::parse(form.email.clone())?;
+impl TryInto<SubscriberDetails> for SubscriptionFormData {
+	type Error = String;
 
-		Ok(Self {
+	fn try_into(self) -> Result<SubscriberDetails, Self::Error> {
+		let name = SubscriberName::parse(self.name)?;
+		let email = SubscriberEmail::parse(self.email)?;
+
+		Ok(SubscriberDetails {
 			name: name,
 			email: email
 		})
@@ -87,6 +90,8 @@ mod subscriber_name_tests {
 
 #[cfg(test)]
 mod subscriber_email_tests {
+	use fake::Fake;
+	use fake::faker::internet::en::SafeEmail;
 	use crate::domain::SubscriberEmail;
 	use claim::{assert_err, assert_ok};
 
@@ -100,5 +105,11 @@ mod subscriber_email_tests {
 	fn test_parse_valid_email_returns_ok() {
 		let valid_email = "dylan@gmail.com".to_string();
 		assert_ok!(SubscriberEmail::parse(valid_email));
+	}
+
+	#[test]
+	fn test_parse_valid_email_is_successful() {
+		let email = SafeEmail().fake();
+		assert_ok!(SubscriberEmail::parse(email));
 	}
 }

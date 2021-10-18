@@ -78,5 +78,5 @@ mod tests {
 			let res = is_valid_name(&name);
 			assert_eq!(res, false);
 		}
-	}	
+	}
 }

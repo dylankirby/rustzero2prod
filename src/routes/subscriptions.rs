@@ -1,5 +1,6 @@
 use uuid::Uuid;
 use chrono::Utc;
+use std::convert::TryInto;
 
 use sqlx::{PgPool};
 
@@ -19,7 +20,7 @@ use crate::domain::{SubscriberDetails, SubscriptionFormData};
 	)
 )]
 pub async fn subscriptions_post(form: web::Form<SubscriptionFormData>, db_pool: web::Data<PgPool>) -> HttpResponse {
-	let subscriber_deails = match SubscriberDetails::from_form(&form) {
+	let subscriber_deails = match form.0.try_into() {
 		Ok(subscriber_deails) => subscriber_deails,
 		Err(_) => return HttpResponse::BadRequest().finish()
 	};
