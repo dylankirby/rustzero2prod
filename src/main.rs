@@ -5,6 +5,7 @@ use sqlx::postgres::PgPoolOptions;
 use zero2prod::startup::run;
 use zero2prod::configurations::get_configurations;
 use zero2prod::telemetry::{get_tracing_subscriber, init_tracing_subscriber};
+use zero2prod::email_client::EmailClient;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -19,7 +20,16 @@ async fn main() -> std::io::Result<()> {
 		.await
 		.expect("Failed to connect to Postgres");
 
+	let sender_email = configs.email_client.get_sender_email()
+		.expect("Failed to parse sender email, seems invalid");
+
+	let email_client = EmailClient::new(
+		configs.email_client.base_url,
+		sender_email,
+		configs.email_client.authorization_token
+	);
+
 	let application_address = format!("{}:{}", configs.application.host, configs.application.port);
 	let listener = TcpListener::bind(application_address)?;
-    run(listener, db_pool)?.await
+    run(listener, db_pool, email_client)?.await
 }

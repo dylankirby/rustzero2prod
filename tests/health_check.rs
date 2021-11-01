@@ -5,6 +5,7 @@ use uuid::Uuid;
 use zero2prod::startup::run;
 use zero2prod::configurations::{get_configurations, DatabaseSettings};
 use zero2prod::telemetry::{get_tracing_subscriber, init_tracing_subscriber};
+use zero2prod::email_client::EmailClient;
 use once_cell::sync::Lazy;
 
 static TRACING: Lazy<()> = Lazy::new(|| {
@@ -137,7 +138,16 @@ async fn spawn_app() -> TestApp {
 	let db_pool = configure_database(&configs.database)
 		.await;
 
-	let server = run(listener, db_pool.clone()).expect("Failed to bind to server to listener");
+	let sender_email = configs.email_client.get_sender_email()
+		.expect("Failed to parse sender email, seems invalid");
+
+	let email_client = EmailClient::new(
+			configs.email_client.base_url,
+			sender_email,
+			configs.email_client.authorization_token
+		);
+
+	let server = run(listener, db_pool.clone(), email_client).expect("Failed to bind to server to listener");
 
 	let _ = tokio::spawn(server);
 

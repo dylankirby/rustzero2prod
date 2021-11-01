@@ -9,8 +9,6 @@ use actix_web::{web, HttpResponse};
 use crate::domain::{SubscriberDetails, SubscriptionFormData};
 
 
-
-
 #[tracing::instrument(
 	name = "Adding new subscriber",
 	skip(form, db_pool),
