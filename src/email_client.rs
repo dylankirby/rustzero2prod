@@ -70,7 +70,7 @@ mod tests {
 
 	use fake::faker::internet::en::SafeEmail;
 	use fake::faker::lorem::en::{Paragraph, Sentence};
-	use fake::{Fake, Faker};
+	use fake::Fake;
 
 	use wiremock::{Match, Request};
 	use wiremock::{Mock, MockServer, ResponseTemplate};
@@ -104,7 +104,7 @@ mod tests {
 	}
 
 	fn subject() -> String {
-		Paragraph(1..2).fake()
+		Sentence(1..2).fake()
 	}
 
 	fn html_content() -> String {
