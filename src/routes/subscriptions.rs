@@ -36,13 +36,14 @@ pub async fn insert_subscriber(new_subscriber: &SubscriberDetails, db_pool: &PgP
 	let sub_uuid = Uuid::new_v4();
 	sqlx::query!(
 		r#"
-			INSERT INTO subscriptions (id, email, name, subscribed_at)
-			VALUES ($1, $2, $3, $4)
+			INSERT INTO subscriptions (id, email, name, subscribed_at, status)
+			VALUES ($1, $2, $3, $4, $5)
 		"#,
 		sub_uuid,
 		new_subscriber.email.as_ref(),
 		new_subscriber.name.as_ref(),
-		Utc::now()
+		Utc::now(),
+		"invited"
 	)
 	.execute(db_pool) // Attach the query span to the query to attach tracing to the request future
 	.await
