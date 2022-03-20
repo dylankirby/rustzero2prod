@@ -25,10 +25,13 @@ impl Application {
         let sender_email = configs.email_client.get_sender_email()
             .expect("Failed to parse sender email, seems invalid");
 
+
+        let email_client_timeout = configs.email_client.timeout();
         let email_client = EmailClient::new(
             configs.email_client.base_url,
             sender_email,
-            configs.email_client.authorization_token
+            configs.email_client.authorization_token,
+            email_client_timeout
         );
 
         let application_address = format!("{}:{}", configs.application.host, configs.application.port);
