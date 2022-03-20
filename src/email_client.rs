@@ -3,6 +3,7 @@ use reqwest;
 use crate::domain::SubscriberEmail;
 
 
+#[derive(Debug)]
 pub struct EmailClient {
 	sender: SubscriberEmail,
 	client: reqwest::Client,
