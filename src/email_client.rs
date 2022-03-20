@@ -22,9 +22,9 @@ pub struct SendEmailRequestData<'a> {
 }
 
 impl EmailClient {
-	pub fn new(base_url: String, sender: SubscriberEmail, authorization_token: String) -> Self {
+	pub fn new(base_url: String, sender: SubscriberEmail, authorization_token: String,timeout: std::time::Duration) -> Self {
 		let http_client = reqwest::Client::builder()
-			.timeout(std::time::Duration::from_secs(10))
+			.timeout(timeout)
 			.build()
 			.unwrap();
 
@@ -32,7 +32,7 @@ impl EmailClient {
 			client: http_client,
 			sender: sender,
 			base_url: base_url,
-			authorization_token: authorization_token
+			authorization_token: authorization_token,
 		}
 	}
 
@@ -101,7 +101,8 @@ mod tests {
 	}
 
 	fn email_client(server_uri: String) -> EmailClient {
-		EmailClient::new(server_uri, sender_email(), auth_token())
+		let timeout = std::time::Duration::from_secs(1);
+		EmailClient::new(server_uri, sender_email(), auth_token(), timeout)
 	}
 
 	fn subject() -> String {
